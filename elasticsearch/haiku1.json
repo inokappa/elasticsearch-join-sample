@@ -1,0 +1,119 @@
+PUT haiku_idx
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "analysis-kuromoji": {
+          "type": "custom",
+          "tokenizer": "kuromoji_tokenizer"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "doc": {
+      "properties": {
+        "author_name": {
+          "type": "text",
+          "analyzer": "analysis-kuromoji"
+        },
+        "sakuhin": {
+          "type": "text",
+          "analyzer": "analysis-kuromoji"
+        },
+        "kigo": {
+          "type": "text"
+        },
+        "join_key": {
+          "type": "join",
+          "relations": {
+            "author": "sakuhin"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+PUT haiku_idx/doc/1
+{
+  "author_name": "松尾芭蕉",
+  "join_key": {
+    "name": "author"
+  }
+}
+
+PUT haiku_idx/doc/2
+{
+  "author_name": "正岡子規",
+  "join_key": {
+    "name": "author"
+  }
+}
+
+PUT haiku_idx/doc/3
+{
+  "author_name": "小林一茶",
+  "join_key": {
+    "name": "author"
+  }
+}
+
+PUT haiku_idx/doc/4
+{
+  "author_name": "与謝蕪村",
+  "join_key": {
+    "name": "author"
+  }
+}
+
+PUT haiku_idx/doc/5?routing=1
+{
+  "sakuhin": "五月雨を／集めてはやし／最上川",
+  "kigo": "夏",
+  "join_key": {
+    "name": "sakuhin",
+    "parent": "1"
+  }
+}
+
+PUT haiku_idx/doc/6?routing=2
+{
+  "sakuhin": "さらさらと／竹に音あり／夜の雪",
+  "kigo": "冬",
+  "join_key": {
+    "name": "sakuhin",
+    "parent": "2"
+  }
+}
+
+PUT haiku_idx/doc/7?routing=1
+{
+  "sakuhin": "しずかさや／岩にしみ入る／蝉の声",
+  "kigo": "夏",
+  "join_key": {
+    "name": "sakuhin",
+    "parent": "1"
+  }
+}
+
+PUT haiku_idx/doc/8?routing=3
+{
+  "sakuhin": "すずめの子／そこのけそこのけ／お馬が通る",
+  "kigo": "春",
+  "join_key": {
+    "name": "sakuhin",
+    "parent": "3"
+  }
+}
+
+PUT haiku_idx/doc/9?routing=3
+{
+  "sakuhin": "やせ蛙／負けるな一茶／これにあり",
+  "kigo": "春",
+  "join_key": {
+    "name": "sakuhin",
+    "parent": "3"
+  }
+}

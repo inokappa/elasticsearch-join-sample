@@ -1,0 +1,52 @@
+version: '2'
+services:
+  aurora:
+    container_name: dummy-db
+    image: mysql
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  es:
+    container_name: dummy-es
+    # image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
+    build:
+      context: ./docker
+      dockerfile: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+      - xpack.graph.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.security.enabled=false
+      - xpack.watcher.enabled=false
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+      memlock:
+        soft: -1
+        hard: -1
+  kibana:
+    container_name: dummy-kibana
+    image: docker.elastic.co/kibana/kibana:6.2.2
+    ports:
+      - 5601:5601
+    links:
+        - es:es
+    environment:
+      - ELASTICSEARCH_URL=http://es:9200
+      - xpack.graph.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.reporting.enabled=false
+      - xpack.security.enabled=false
+      - xpack.monitoring.report_stats=false
+      - xpack.monitoring.ui.enabled=false
